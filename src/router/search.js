@@ -19,7 +19,18 @@ class Search extends Component {
   }
 
   handleSubmit = e => {
-    alert("The value is: " + this.input.value);
+    const data = { search: this.input.value };
+
+    fetch("http://localhost:3000/search", {
+      method: "POST",
+      body: JSON.stringify(data),
+      headers: {
+        "Content-Type": "application/json"
+      }
+    }).then(response => {
+      console.log(response);
+    });
+
     e.preventDefault();
   };
 

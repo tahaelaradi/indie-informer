@@ -33,7 +33,7 @@ function Header() {
     <NavBar>
       <Link to="/">
         <Title>
-          <i class="fas fa-gamepad" />&nbsp;Indie~Informer!
+          <i className="fas fa-gamepad" />&nbsp;Indie~Informer!
         </Title>
       </Link>
       <ButtonGroup>
