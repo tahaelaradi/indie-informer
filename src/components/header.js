@@ -31,9 +31,11 @@ const ButtonGroup = styled.div`
 function Header() {
   return (
     <NavBar>
-      <Title>
-        <i class="fas fa-gamepad" />&nbsp;Indie~Informer!
-      </Title>
+      <Link to="/">
+        <Title>
+          <i class="fas fa-gamepad" />&nbsp;Indie~Informer!
+        </Title>
+      </Link>
       <ButtonGroup>
         <Link to="/search">
           <NavLink title={"Search"} icon={"fa fa-search"} />
