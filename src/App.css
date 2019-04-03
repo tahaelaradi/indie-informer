@@ -1,5 +1,6 @@
 .App {
-  background-color: #282c34;
+  background-color: #607593;
   min-height: 100vh;
   display: flex;
+  padding: 100px 0px 16px 16px;
 }

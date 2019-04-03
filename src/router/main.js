@@ -1,10 +1,15 @@
 import React from "react";
+import styled from "styled-components";
+
+const Test = styled.div`
+  margin: 500px;
+`;
 
 function Main() {
   return (
-    <div>
+    <Test>
       <h2>Main</h2>
-    </div>
+    </Test>
   );
 }
 
