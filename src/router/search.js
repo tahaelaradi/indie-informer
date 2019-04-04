@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import styled from "styled-components";
+import { testData } from "../utils/MLOperator"
 
 const SearchBar = styled.input`
   margin: auto;
@@ -19,20 +20,23 @@ class Search extends Component {
   }
 
   handleSubmit = e => {
-    const data = { search: this.input.value };
+    const input = { search: this.input.value };
 
     fetch("http://localhost:4000/search", {
       method: "POST",
-      body: JSON.stringify(data),
+      body: JSON.stringify(input),
       headers: {
         "Content-Type": "application/json"
       }
     })
-      .then(function(response) {
+      .then(response => {
         return response.json();
       })
-      .then(function(myJson) {
-        console.log(JSON.stringify(myJson));
+      .then(data => {
+        return testData(data, [input.search]);
+      })
+      .then(result => {
+        console.log('result', result)
       });
 
     e.preventDefault();

@@ -14,9 +14,11 @@ app.use(express.json());
 app.post("/search/", function(req, res) {
   console.log("test");
   Promise.all([fetchFromSteamSpy(req.body.search)])
-    .then(games => deconstructFetchedData(games))
+    .then(games => fetchedDataPerGame(games))
     .then(result => {
-      res.send(JSON.stringify(result));
+      let data = deconstructGameData(result);
+      let scaledData = generateScaledData(data);
+      res.send(JSON.stringify(scaledData));
     });
 });
 
@@ -26,7 +28,7 @@ app.listen(port, function() {
 
 //
 
-const sampleRate = 20;
+const sampleRate = 12;
 
 function fetchFromSteamSpy(params) {
   return new Promise((resolve, reject) => {
@@ -46,7 +48,7 @@ function fetchFromSteamSpy(params) {
   });
 }
 
-function deconstructFetchedData(games) {
+function fetchedDataPerGame(games) {
   var result = {};
   return new Promise((resolve, reject) => {
     var index = 0;
@@ -89,3 +91,68 @@ function IsJsonString(str) {
   }
   return true;
 }
+
+function deconstructGameData(games) {
+  return (result = Object.values(games).map(game => {
+    let min = parseInt(game["owners"].split(" ")[0].replace(/,/g, ""));
+    let max = parseInt(game["owners"].split(" ")[2].replace(/,/g, ""));
+
+    let tags = Object.keys(game["tags"])
+      .sort(function(a, b) {
+        return game["tags"][b] - game["tags"][a];
+      })
+      .slice(0, 5);
+
+    return {
+      id: game.appid,
+      price: game["price"] / 100,
+      copies: (min + max) / 2,
+      tags: tags
+    };
+  }));
+}
+
+function generateScaledData(input) {
+  let x = input.map(game => {
+    let gameTags = game.tags.tagsSpecifier();
+    return gameTags;
+  });
+
+  let y = input
+    .map(game => {
+      return game.copies;
+    })
+    .scaleBetween(0, 1)
+    .map(num => [num]);
+
+  console.log({ x, y });
+  return { x, y };
+}
+
+Array.prototype.scaleBetween = function(scaledMin, scaledMax) {
+  var max = Math.max.apply(Math, this);
+  var min = Math.min.apply(Math, this);
+
+  return max == min
+    ? this.map(num => 1)
+    : this.map(
+        num => ((scaledMax - scaledMin) * (num - min)) / (max - min) + scaledMin
+      );
+};
+
+Array.prototype.tagsSpecifier = function() {
+  let res = tags.map(tag => {
+    if (this.includes(tag)) return 1;
+    else return 0;
+  });
+  return res;
+};
+
+const tags = ["Indie", "Action", "Adventure", "Casual", "Singleplayer", "Strategy", "Simulation",
+        "RPG", "Multiplayer", "Great Soundtrack", "Atmospheric", "2D", "Puzzle", "Early Access",
+        "Open World", "Story Rich", "Co-op", "Difficult", "Shooter", "Sci-fi", "First-Person",
+        "Horror", "Anime", "Pixel Graphics", "VR", "Funny", "Platfromer", "Fantasy", "Free to Play",
+        "Female Protagonist", "FPS", "Gore", "Survival", "Violent", "Sandbox", "Retro", "Arcade",
+        "Comedy", "Classic", "Nudity", "Third Person", "Massively Multiplayer", "Exploration", "Point & Click",
+        "Visual Novel", "Turn-Based", "Space", "Sports", "Rogue-like", "Racing"
+        ]
