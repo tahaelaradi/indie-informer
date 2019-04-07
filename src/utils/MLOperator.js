@@ -43,8 +43,8 @@ export function testData(data, input){
   })
 
   async function train_data() {
-    for (let i = 0; i < 3; i++) {
-      const res = await model.fit(x_train, y_train, { epochs: 10, batch_size: 10 });
+    for (let i = 0; i < 5; i++) {
+      const res = await model.fit(x_train, y_train, { epochs: 100 });
       console.log(res.history.loss[0]);
     }
   }

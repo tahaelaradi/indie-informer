@@ -44,7 +44,7 @@ function Header() {
           <NavLink title={"History"} icon={"fas fa-history"} />
         </Link>
         <Link to="/about">
-          <NavLink title={"About"} icon={"fas fa-info-circle"} />
+          <NavLink title={"About"} icon={"fas fa-lightbulb"} />
         </Link>
       </ButtonGroup>
     </NavBar>

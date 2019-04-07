@@ -1,26 +1,66 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { testData } from "../utils/MLOperator"
+import Select from "react-select";
 
-const SearchBar = styled.input`
-  margin: auto;
+import { testData } from "../utils/MLOperator";
+import { genreOptions } from "../utils/Genres"
+import { tagOptions } from "../utils/Tags"
+
+const SearchFrom = styled.div`
+  width: 100%;
 `;
 
-const SubmitButton = styled.input`
-  border-radius: 0px 8px 8px 0px;
-  color: #ffffff;
-  background: #3498db;
-  text-decoration: none;
-  padding: 2px 12px;
+const GenreBox = styled.div`
+  display: flex;
+  width: 200px;
+`;
+
+const LabelGenre = styled.h4`
+  padding-right: 10px;
+  margin-top: 10px;
+`;
+
+const Button = styled.div`
+display: block;
+position: relative;
+float: left;
+width: 100px;
+padding: 0;
+margin: 10px 10px 10px 0;
+font-weight: 600;
+text-align: center;
+line-height: 30px;
+color: #1e2638;
+background: #e8e8e8;
+border-radius: 5px;
 `;
 
 class Search extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      isTraining: false,
+      selectedGenre: "",
+      selectedTags: []
+    };
+  }
+
+  handleChange = selectedGenre => {
+    this.setState({ selectedGenre: selectedGenre.value });
+  };
+
+  addTags = tags => {
+    this.setState({ selectedTags: tags });
   }
 
   handleSubmit = e => {
-    const input = { search: this.input.value };
+    const input = { search: this.state.selectedGenre };
+
+    if(this.state.isTraining){
+      return;
+    }
+
+    this.setState({ isTraining: true });
 
     fetch("http://localhost:4000/search", {
       method: "POST",
@@ -36,7 +76,8 @@ class Search extends Component {
         return testData(data, [input.search]);
       })
       .then(result => {
-        console.log('result', result)
+        this.setState({ isTraining: false });
+        console.log("result", result);
       });
 
     e.preventDefault();
@@ -44,15 +85,20 @@ class Search extends Component {
 
   render() {
     return (
-      <div>
+      <SearchFrom>
         <h2>Search</h2>
-        <form onSubmit={this.handleSubmit}>
-          <label>
-            <SearchBar ref={input => (this.input = input)} />
-            <SubmitButton type="submit" value="Submit" />
-          </label>
-        </form>
-      </div>
+        <div>
+          <LabelGenre>Genre</LabelGenre>
+          <Select options={genreOptions} onChange={this.handleChange} />
+        </div>
+        <div>
+          <LabelGenre>Tags</LabelGenre>
+          <Select isMulti className="basic-multi-select" onChange={this.addTags} options={tagOptions} />
+        </div>
+          <Button type="submit" value="Submit" onClick={this.handleSubmit}>
+            Submit
+          </Button>
+      </SearchFrom>
     );
   }
 }
