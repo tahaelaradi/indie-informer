@@ -12,7 +12,7 @@ app.use(express.json());
 //
 
 app.post("/search/", function(req, res) {
-  console.log("test");
+  console.log(`search: ${req.body.search}`);
   Promise.all([fetchFromSteamSpy(req.body.search)])
     .then(games => fetchedDataPerGame(games))
     .then(result => {
@@ -28,7 +28,7 @@ app.listen(port, function() {
 
 //
 
-const sampleRate = 12;
+const sampleRate = 10;
 
 function fetchFromSteamSpy(params) {
   return new Promise((resolve, reject) => {
@@ -93,9 +93,14 @@ function IsJsonString(str) {
 }
 
 function deconstructGameData(games) {
-  return (result = Object.values(games).map(game => {
+  let maxSales = 0;
+  let gamesData = Object.values(games).map(game => {
     let min = parseInt(game["owners"].split(" ")[0].replace(/,/g, ""));
     let max = parseInt(game["owners"].split(" ")[2].replace(/,/g, ""));
+
+    if (max > maxSales) {
+      maxSales = max;
+    }
 
     let tags = Object.keys(game["tags"])
       .sort(function(a, b) {
@@ -109,24 +114,25 @@ function deconstructGameData(games) {
       copies: (min + max) / 2,
       tags: tags
     };
-  }));
+  });
+
+  return { gamesData, maxSales: maxSales };
 }
 
 function generateScaledData(input) {
-  let x = input.map(game => {
-    let gameTags = game.tags.tagsSpecifier();
+  let x = input.gamesData.map(game => {
+    let gameTags = game["tags"].tagsSpecifier();
     return gameTags;
   });
 
-  let y = input
+  let y = input.gamesData
     .map(game => {
       return game.copies;
     })
     .scaleBetween(0, 1)
     .map(num => [num]);
 
-  console.log({ x, y });
-  return { x, y };
+  return { x, y, maxSales: input.maxSales };
 }
 
 Array.prototype.scaleBetween = function(scaledMin, scaledMax) {

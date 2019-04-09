@@ -39,7 +39,7 @@ export function testData(data, input){
   const x_test = tf.tensor(test);
 
   return train_data().then(() => {
-    return model.predict(x_test).dataSync()[0]
+    return salesRounder(model.predict(x_test).dataSync()[0] * data.maxSales)
   })
 
   async function train_data() {
@@ -65,4 +65,15 @@ export function testData(data, input){
     });
     return res;
   };
+
+  function salesRounder(num) {
+    let num_int = parseInt(num, 10);
+    let numDigits = Math.pow(10, num_int.toString().length - 2);
+
+    if (num < 1000){
+      return 1000;
+    } else {
+      return Math.round(num_int/numDigits) * numDigits;
+    }
+  }
 }
