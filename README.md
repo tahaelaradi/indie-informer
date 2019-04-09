@@ -1,68 +1,55 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Indie-Informer
 
-## Available Scripts
+Indie-Informer is an app for game developers to forcast sales for a game idea based on it's genre and themes. It uses historical data of games sold on steam store for a specific genera, to train a neural network. The neural network will then predict the potential number of copies sold based on the themes (tags) input by the user.
 
-In the project directory, you can run:
+## How It Works
 
-### `npm start`
+Lets, say we want to build a 2D RPG game with some action elements. We'd put 'RPG' as our genre of choice, and insert '2D' and 'Action' as our tags.
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+![Alt Text](https://github.com/tahaelaradi/indie-informer/blob/master/demo.gif)
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
+The app will fetch from steamspy API the data of all games under that genre, in this case its 'RPG'. The app will take this data set (mainly associated tags for each game), deconstruct and rescale it, then feed it as input to train a neural network using Google's ML framework TensorFlow. Once the model is trained, the tags of our choice, in this case '2D' and 'Action', is passed as our prediction input to estimate the number of copies our game idea would sell.
 
-### `npm test`
+Generally the more specific our input for tags, the more accurate the model will be able to predict.
 
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Installing
 
-### `npm run build`
+install all the npm packages
+```
+npm install
+```
 
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
+start the react server
+```
+npm start
+```
 
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
+start the express server
+```
+node index.js
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+open your browser
+```
+localhost:3000
+```
 
-### `npm run eject`
+## Data Processing & Training The Neural Network
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+Once the data for games under a specific genre is fetched. The top 5 associated tags for each games is passed to a mapper that determines if an attribute (tag) is true or false (1 or 0). This generates our first input for the neural network.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Additionally, the number of copies each game sales is normalized between 0 and 1; 0 being the least number a game has sold and 1 being the most. This will be our second input. Both inputs are passed to our model and trained.  
 
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+![Alt Text](https://github.com/tahaelaradi/indie-informer/blob/master/neural_network.png)
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+## Built With
 
-## Learn More
+* React
+* [TensorFlow.js](https://github.com/tensorflow/tfjs) - Google's ML Framework
+* [SteamSpy](http://steamspy.com/) - SteamSpy API, a game sales tracking database
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Remarks
 
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+* This app was inspired by a similar project in a course by Adam Geitgey titled 'Building and Deploying Deep Learning Applications with TensorFlow' on Lynda.com. While the implementation is slightly different, the methodology is highly motivated by the approaches discussed in this course.
+* Due to limitations set by steamspy API, where a poll rate of only 4 requests per second is allowed, only 200 to 250 game records can be fetched per minute which is a very small set. This would naturally result in a less rigorous training for our model, and a less accurate prediction. But for the sake of demonstration, the number of samples set for our app is small. In case you wish to reach more accurate results, all you have to do is set the sampleRate in index.js to a higher number, but note that the higher the number the longer it will take to both fetch the data and train the model.
+* The app uses TensorFlow.js as apposed to the node version. While the node version has a better performance benchmark, it requires further setup and additional requirements for the GPU. TensorFlow.js needs to run on the browser, which is why this app only provides client-side prediction. Ideally, the app would have been better if the training were to be handled server-side instead.
