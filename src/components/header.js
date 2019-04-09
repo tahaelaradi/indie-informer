@@ -7,25 +7,20 @@ import NavLink from "./navlink";
 const NavBar = styled.div`
   overflow: hidden;
   background-color: #1e2638;
-  position: fixed;
   top: 0;
-  width: 100%;
+  padding: 16px 24px;
 `;
 
-const Title = styled.h2`
+const Title = styled.h1`
   color: white;
   font-weight: bold;
   text-shadow: 2px 2px #3066be;
   float: left;
-  padding: 16px 32px;
+  margin: 0px;
 `;
 
 const ButtonGroup = styled.div`
   float: right;
-  display: flex;
-  text-align: center;
-  vertical-align: text-bottom;
-  padding: 14px 16px;
 `;
 
 function Header() {

@@ -17,7 +17,7 @@ const GenreBox = styled.div`
 
 const LabelGenre = styled.h4`
   padding-right: 10px;
-  margin-top: 10px;
+  margin: 20px 0px 10px 0px;
 `;
 
 const Button = styled.div`
@@ -26,13 +26,22 @@ const Button = styled.div`
   float: right;
   width: 100px;
   padding: 0;
-  margin: 20px 0px 20px 0;
+  margin: 20px 0px;
   font-weight: 600;
   text-align: center;
   line-height: 30px;
   color: #1e2638;
   background: #e8e8e8;
   border-radius: 5px;
+  transition: all 0.2s;
+  box-shadow: 0px 5px 0px 0px #b7b7b7;
+  cursor: pointer;
+
+  &:active {
+    margin-top: 15px;
+    margin-bottom: 5px;
+    box-shadow: 0px 0px 0px 0px #b7b7b7;
+  }
 `;
 
 const Loader = styled.div`
@@ -43,7 +52,7 @@ const Loader = styled.div`
   animation: changeContent .8s linear infinite;
   display: block;
   content: "⠋";
-  font-size: 50px;
+  font-size: 30px;
 }
 
 @keyframes changeContent {
@@ -59,8 +68,13 @@ const Loader = styled.div`
 }
 `;
 
-const Result = styled.div`
-  margin: 20px 0px;
+const ResultBox = styled.div`
+  display: flex;
+  margin: 10px 0px;
+`;
+
+const ResultLabel = styled.div`
+  margin: 10px 10px;
 `;
 
 class Search extends Component {
@@ -140,17 +154,17 @@ class Search extends Component {
           Submit
         </Button>
         {this.state.isTraining ? (
-          <div>
+          <ResultBox>
             <Loader />
-            <h4>
-              Training...
-            </h4>
-          </div>
+            <ResultLabel>
+              Training Model
+            </ResultLabel>
+          </ResultBox>
         ) : null}
         {this.state.result ? (
-          <Result>
-            <h4>Expected result: {this.state.result} Copies!</h4>
-          </Result>
+          <ResultBox>
+            <ResultLabel>Expected Result: {this.state.result} Copies!</ResultLabel>
+          </ResultBox>
         ) : null}
       </SearchFrom>
     );
